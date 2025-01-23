@@ -1,0 +1,39 @@
+-- Aura Reach Script (for combat or interaction reach)
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Aura reach parameters
+local auraRadius = 10  -- The radius of the aura (in studs)
+local auraEffect = "Damage"  -- Effect type (could be "Damage", "Heal", etc.)
+
+-- Function to create the aura effect
+local function applyAuraEffect()
+    -- Create a spherical region around the player (this is the aura reach)
+    local auraRegion = Region3.new(
+        character.HumanoidRootPart.Position - Vector3.new(auraRadius, auraRadius, auraRadius),
+        character.HumanoidRootPart.Position + Vector3.new(auraRadius, auraRadius, auraRadius)
+    )
+
+    -- Get all parts within the aura region
+    local partsInAura = workspace:FindPartsInRegion3(auraRegion, character, math.huge)
+
+    for _, part in ipairs(partsInAura) do
+        -- Check if the part is a player (or something you want to interact with)
+        local otherPlayer = game.Players:GetPlayerFromCharacter(part.Parent)
+        if otherPlayer and otherPlayer ~= player then
+            -- Apply effect (e.g., damage or other aura effect)
+            if auraEffect == "Damage" then
+                local humanoid = part.Parent:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid:TakeDamage(10)  -- Example: deal 10 damage to players in the aura
+                end
+            end
+        end
+    end
+end
+
+-- Continuously check for aura effect
+while true do
+    applyAuraEffect()
+    wait(1)  -- Check every second
+end
